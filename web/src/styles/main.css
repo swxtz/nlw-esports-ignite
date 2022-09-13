@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 100vh;
+  }
+}
