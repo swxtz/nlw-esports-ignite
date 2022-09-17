@@ -7,6 +7,7 @@ import { styles } from './styles'
 import logoImg from '../../assets/logo-nlw-esports.png'
 import { Heading } from '../../components/Heading'
 import { GameCard, GameCardProps } from '../../components/GameCard'
+import { Background } from '../../components/Background'
 
 export function Home() {
   const [games, setGames] = useState<GameCardProps[]>([])
@@ -17,6 +18,7 @@ export function Home() {
       .then(data => setGames(data))
   }, [])
   return (
+    <Background>
     <SafeAreaView style={styles.container}>
       <Image source={logoImg} style={styles.logo} />
 
@@ -34,5 +36,6 @@ export function Home() {
         contentContainerStyle={styles.contentList}
       />
     </SafeAreaView>
+    </Background>
   )
 }
