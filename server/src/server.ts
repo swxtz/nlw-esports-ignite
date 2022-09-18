@@ -8,7 +8,7 @@ const app = express()
 
 app.use(express.json())
 const prisma = new PrismaClient({
-  log: ['query']
+  // log: ['query']x
 })
 
 app.use(cors())
@@ -74,7 +74,7 @@ app.get('/games/:id/ads', async (request, response) => {
 
   return response.json(ads.map(ad => {
     return {
-      ...ads,
+      ...ad,
       weekDays: ad.weekDays.split(','),
       hourStart: convertMinutesToHoursString(ad.hourStart),
       hourEnd: convertMinutesToHoursString(ad.hourEnd)
