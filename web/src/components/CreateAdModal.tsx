@@ -4,11 +4,17 @@ import { Check, GameController } from 'phosphor-react'
 import { Input } from './Form/input'
 import { useEffect, useState, FormEvent } from 'react'
 import * as ToggleGroup from '@radix-ui/react-toggle-group'
+import axios from 'axios'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Game {
   id: string
   title: string
 }
+
+
+
 
 export function CreateAdModal() {
   const [games, setGames] = useState<Game[]>([])
@@ -16,24 +22,64 @@ export function CreateAdModal() {
   const [useVoiceChannel, setUseVoiceChannel] = useState(false)
 
   useEffect(() => {
-    fetch('http://localhost:3333/games')
-      .then(response => response.json())
-      .then(data => {
-        setGames(data)
-      })
+    axios('http://localhost:3333/games').then(response => {
+      setGames(response.data)
+
+    })
   }, [])
 
-  function handleCreateAd(event: FormEvent) {
+  const notifyErr = () => {
+    toast.error(' Erro ao criar anuncio!', {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined
+    })
+  }
+  const notifySuccess = () => {
+    toast.success(' Anuncio criado com sucesso!', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
+  }
+  
+
+  async function handleCreateAd(event: FormEvent) {
     event.preventDefault()
 
     const formData = new FormData(event.target as HTMLFormElement)
     const data = Object.fromEntries(formData)
-    console.log(data)
-    console.log(weekDays)
-    console.log(useVoiceChannel)
+
+    try {
+      await axios.post(`http://localhost:3333/games/${data.game}/ads`, {
+        name: data.name,
+        yearsPlaying: Number(data.yearsPlaying),
+        discord: data.discord,
+        weekDays: weekDays.map(Number),
+        hourStart: data.hourStart,
+        hourEnd: data.hourEnd,
+        useVoiceChannel: useVoiceChannel
+      })
+
+      notifySuccess()
+    } catch (err) {
+      console.log(err)
+      notifyErr()
+    }
   }
 
   return (
+    
+    <>
+    
     <Dialog.Portal>
       <Dialog.Overlay className="bg-black/60 inset-0 fixed" />
       <Dialog.Content className="fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[480px] shadow-lg shadow-black/25">
@@ -186,13 +232,17 @@ export function CreateAdModal() {
           </div>
 
           <label className="mt-2 flex gap-2 items-center text-sm">
-            <Checkbox.Root checked={useVoiceChannel} onCheckedChange={(checked) => {
-              if(checked === true) {
-                setUseVoiceChannel(true)
-              } else {
-                setUseVoiceChannel(false)
-              }
-            }} className="w-6 h-6 rounded p-1 bg-zinc-900">
+            <Checkbox.Root
+              checked={useVoiceChannel}
+              onCheckedChange={checked => {
+                if (checked === true) {
+                  setUseVoiceChannel(true)
+                } else {
+                  setUseVoiceChannel(false)
+                }
+              }}
+              className="w-6 h-6 rounded p-1 bg-zinc-900"
+            >
               <Checkbox.Indicator>
                 <Check className="w-4 h-4 text-emerald-400 " />
               </Checkbox.Indicator>
@@ -218,5 +268,6 @@ export function CreateAdModal() {
         </form>
       </Dialog.Content>
     </Dialog.Portal>
+    </>
   )
 }
