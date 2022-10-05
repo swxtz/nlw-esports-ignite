@@ -7,6 +7,7 @@ import * as ToggleGroup from '@radix-ui/react-toggle-group'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import * as yup from 'yup';
 
 interface Game {
   id: string
